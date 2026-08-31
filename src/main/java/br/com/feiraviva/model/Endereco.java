@@ -32,7 +32,7 @@ public class Endereco {
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
-    protected Endereco() { }
+    public Endereco() { }
 // getters e setters (gerar pelo IDE)
 
     public Long getId() {

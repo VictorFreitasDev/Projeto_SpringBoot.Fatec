@@ -28,7 +28,7 @@ public class Cliente {
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Endereco> enderecos = new ArrayList<>();
 
-    protected Cliente() { }
+    public   Cliente() { }
 // getters e setters (gerar pelo IDE)
 
     public Long getId() {
