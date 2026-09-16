@@ -101,8 +101,13 @@ public class CarrinhoService {
     }
 
     public BigDecimal calcularFrete(BigDecimal subtotal) {
-        return subtotal.compareTo(FRETE_GRATIS_ACIMA_DE) >= 0
-                ? BigDecimal.ZERO : FRETE_FIXO;
+        return subtotal.compareTo(configuracoes.getFreteGratisAcimaDe()) >= 0
+                ? BigDecimal.ZERO
+                : configuracoes.getFreteFixo();
+    }
+
+    public long identityHashCodeConfiguracoes() {
+        return System.identityHashCode(configuracoes);
     }
 
     private CarrinhoResponseDTO paraResponse(Carrinho c) {
