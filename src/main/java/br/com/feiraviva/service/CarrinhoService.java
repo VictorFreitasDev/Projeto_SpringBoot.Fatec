@@ -105,10 +105,14 @@ public class CarrinhoService {
                 });
     }
 
-    public BigDecimal calcularFrete(BigDecimal subtotal) {
-        return subtotal.compareTo(configuracoes.getFreteGratisAcimaDe()) >= 0
-                ? BigDecimal.ZERO
-                : configuracoes.getFreteFixo();
+    @Transactional
+    public CarrinhoResponseDTO definirEstrategiaFrete(Long clienteId, String tipo) {
+        if (!calculadoraFrete.existe(tipo)) {
+            throw new ResourceNotFoundException("Estratégia de frete inválida: " + tipo);
+        }
+        var carrinho = buscarOuCriar(clienteId);
+        carrinho.setEstrategiaFrete(tipo.toUpperCase());
+        return paraResponse(carrinho);
     }
 
     public long identityHashCodeConfiguracoes() {
@@ -140,7 +144,9 @@ public class CarrinhoService {
         var subtotal = c.getItens().stream()
                 .map(ItemCarrinho::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        var frete = calcularFrete(subtotal);
+
+        var estrategia = c.getEstrategiaFrete() == null ? "PADRAO" : c.getEstrategiaFrete();
+        var frete = calculadoraFrete.calcular(estrategia, subtotal);   // Strategy em ação
 
         BigDecimal desconto = BigDecimal.ZERO;
         String cupomAplicado = null;
@@ -150,9 +156,9 @@ public class CarrinhoService {
             cupomAplicado = cupom.getCodigo();
         }
 
-        var total = subtotal.add(frete).subtract(desconto);   // R2 + desconto
-        return new CarrinhoResponseDTO(c.getId(), itens, cupomAplicado,
-                desconto, subtotal, frete, total);
+        var total = subtotal.add(frete).subtract(desconto);
+        return new CarrinhoResponseDTO(c.getId(), itens, cupomAplicado, desconto,
+                estrategia, subtotal, frete, total);
     }
 
 }

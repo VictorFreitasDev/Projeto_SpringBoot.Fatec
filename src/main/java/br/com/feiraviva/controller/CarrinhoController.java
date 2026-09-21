@@ -52,4 +52,10 @@ public class CarrinhoController {
         return carrinhoService.removerCupom(clienteId);
     }
 
+    @PostMapping("/frete")
+    public CarrinhoResponseDTO definirFrete(@RequestParam Long clienteId,
+                                            @RequestParam String tipo) {
+        return carrinhoService.definirEstrategiaFrete(clienteId, tipo);
+    }
+
 }

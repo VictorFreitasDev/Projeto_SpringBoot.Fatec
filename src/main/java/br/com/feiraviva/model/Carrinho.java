@@ -28,7 +28,17 @@ public class Carrinho {
     @Column(name = "codigo_cupom", length = 20)
     private String codigoCupom;      // + getter/setter
 
-    // getters e setters (gerar pelo IDE)
+    @Column(name = "estrategia_frete", length = 20)
+    private String estrategiaFrete;
+
+    public String getEstrategiaFrete() {
+        return estrategiaFrete;
+    }
+
+    public void setEstrategiaFrete(String estrategiaFrete) {
+        this.estrategiaFrete = estrategiaFrete;
+    }
+// getters e setters (gerar pelo IDE)
 
 
     public String getCodigoCupom() {

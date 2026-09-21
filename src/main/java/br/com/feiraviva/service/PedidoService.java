@@ -52,11 +52,11 @@ public class PedidoService {
 
         var pedido = pedidoFactory.montar(carrinho, endereco);
 
-        pedidoRepository.save(pedido);
-        pedido.setNumero(String.format("FV-%04d", pedido.getId()));  // dirty checking persiste
-
-        carrinho.getItens().clear();   // carrinho zerado após a compra
-        carrinho.setCodigoCupom(null);   // cupom não sobrevive à compra
+        var estrategia = carrinho.getEstrategiaFrete() == null ? "PADRAO" : carrinho.getEstrategiaFrete();
+        var frete = calculadoraFrete.calcular(estrategia, subtotal);
+        carrinho.getItens().clear();
+        carrinho.setCodigoCupom(null);
+        carrinho.setEstrategiaFrete(null);   // estratégia não sobrevive à compra
         return paraResponse(pedido);
     }
 
