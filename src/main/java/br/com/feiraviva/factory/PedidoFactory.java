@@ -5,7 +5,7 @@ import br.com.feiraviva.model.Endereco;
 import br.com.feiraviva.model.ItemPedido;
 import br.com.feiraviva.model.Pedido;
 import br.com.feiraviva.model.PedidoStatus;
-import br.com.feiraviva.service.CarrinhoService;
+import br.com.feiraviva.strategy.CalculadoraFrete;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -13,10 +13,10 @@ import java.math.BigDecimal;
 @Component
 public class PedidoFactory {
 
-    private final CarrinhoService carrinhoService;
+    private final CalculadoraFrete calculadoraFrete;
 
-    public PedidoFactory(CarrinhoService carrinhoService) {
-        this.carrinhoService = carrinhoService;
+    public PedidoFactory(CalculadoraFrete calculadoraFrete) {
+        this.calculadoraFrete = calculadoraFrete;
     }
 
     public Pedido montar(Carrinho carrinho, Endereco endereco) {
@@ -36,7 +36,8 @@ public class PedidoFactory {
             subtotal = subtotal.add(itemPedido.getSubtotal());
         }
 
-        var frete = carrinhoService.calcularFrete(subtotal);
+        var estrategia = carrinho.getEstrategiaFrete() == null ? "PADRAO" : carrinho.getEstrategiaFrete();
+        var frete = calculadoraFrete.calcular(estrategia, subtotal);
         pedido.setSubtotal(subtotal);
         pedido.setFrete(frete);
         pedido.setTotal(subtotal.add(frete));

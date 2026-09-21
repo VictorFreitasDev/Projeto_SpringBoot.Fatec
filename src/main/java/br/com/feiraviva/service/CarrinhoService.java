@@ -7,6 +7,7 @@ import br.com.feiraviva.model.*;
 import br.com.feiraviva.repository.*;
 import br.com.feiraviva.config.ConfiguracoesFeiraViva;
 import br.com.feiraviva.factory.CupomFactory;
+import br.com.feiraviva.strategy.CalculadoraFrete;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,17 +21,20 @@ public class CarrinhoService {
     private final ClienteRepository clienteRepository;
     private final ConfiguracoesFeiraViva configuracoes;
     private final CupomFactory cupomFactory;
+    private final CalculadoraFrete calculadoraFrete;
 
     public CarrinhoService(CarrinhoRepository carrinhoRepository,
                            ProdutoRepository produtoRepository,
                            ClienteRepository clienteRepository,
                            ConfiguracoesFeiraViva configuracoes,
-                           CupomFactory cupomFactory) {
+                           CupomFactory cupomFactory,
+                           CalculadoraFrete calculadoraFrete) {
         this.carrinhoRepository = carrinhoRepository;
         this.produtoRepository = produtoRepository;
         this.clienteRepository = clienteRepository;
         this.configuracoes = configuracoes;
         this.cupomFactory = cupomFactory;
+        this.calculadoraFrete = calculadoraFrete;
     }
 
     @Transactional
@@ -115,9 +119,6 @@ public class CarrinhoService {
         return paraResponse(carrinho);
     }
 
-    public long identityHashCodeConfiguracoes() {
-        return System.identityHashCode(configuracoes);
-    }
 
 
     @Transactional

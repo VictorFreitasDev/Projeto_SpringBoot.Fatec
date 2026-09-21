@@ -52,8 +52,9 @@ public class PedidoService {
 
         var pedido = pedidoFactory.montar(carrinho, endereco);
 
-        var estrategia = carrinho.getEstrategiaFrete() == null ? "PADRAO" : carrinho.getEstrategiaFrete();
-        var frete = calculadoraFrete.calcular(estrategia, subtotal);
+        pedidoRepository.save(pedido);
+        pedido.setNumero(String.format("FV-%04d", pedido.getId()));
+
         carrinho.getItens().clear();
         carrinho.setCodigoCupom(null);
         carrinho.setEstrategiaFrete(null);   // estratégia não sobrevive à compra

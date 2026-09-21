@@ -2,6 +2,9 @@ package br.com.feiraviva.controller;
 
 import br.com.feiraviva.dto.CategoriaArvoreDTO;
 import br.com.feiraviva.service.CategoriaService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/categorias")
+@Tag(name = "Categoria", description = "Consultas de hierarquia e listagem de categorias")
 public class CategoriaController {
 
     private final CategoriaService categoriaService;
@@ -19,7 +23,10 @@ public class CategoriaController {
     }
 
     @GetMapping("/arvore")
-    public List<CategoriaArvoreDTO> arvore() {
+    @Operation(summary = "Obter árvore de categorias",
+            description = "Retorna toda a estrutura hierárquica das categorias e subcategorias.")
+    @ApiResponse(responseCode = "200", description = "Árvore de categorias retornada com sucesso")
+    public List arvore() {
         return categoriaService.arvore();
     }
 }

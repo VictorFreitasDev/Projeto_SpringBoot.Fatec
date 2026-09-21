@@ -3,7 +3,7 @@
 > Documento vivo do modelo de domínio do projeto.
 > **Stack:** Java 21 LTS • Spring Boot 4.1.1 • Maven • React
 > **Pacote base:** `br.com.feiraviva`
-> **Versão-base:** Aula 10 • **Início do código:** Aula 06 • **Manutenção:** equipes + professor.
+> **Versão-base:** Aula 11 • **Início do código:** Aula 06 • **Manutenção:** equipes + professor.
 
 ## 1. Identificação
 
@@ -33,7 +33,7 @@ Compra de ponta a ponta: catálogo → detalhe do produto → carrinho → login
 | **Categoria** | id, nome, descricao, categoriaPai | 1:N Produto; N:1 Categoria (hierarquia) |
 | **Cliente** | id, nome, email, senhaHash, telefone, papel | 1:N Endereco; 1:N Pedido; 1:(0..1) Carrinho |
 | **Endereco** | id, cep, logradouro, numero, complemento, bairro, cidade, uf | N:1 Cliente; 1:N Pedido |
-| **Carrinho** | id, codigoCupom, dataCriacao | 1:N ItemCarrinho; (0..1):1 Cliente |
+| **Carrinho** | id, codigoCupom, estrategiaFrete, dataCriacao | 1:N ItemCarrinho; (0..1):1 Cliente |
 | **ItemCarrinho** | id, quantidade, precoUnitario | N:1 Carrinho; N:1 Produto |
 | **Pedido** | id, numero, status, subtotal, frete, total, dataCriacao | N:1 Cliente; N:1 Endereco; 1:N ItemPedido; 1:1 Pagamento |
 | **ItemPedido** | id, quantidade, precoUnitario (snapshot) | N:1 Pedido; N:1 Produto |

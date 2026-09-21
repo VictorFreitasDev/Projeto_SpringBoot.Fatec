@@ -1,7 +1,8 @@
 package br.com.feiraviva.model;
 
 import jakarta.persistence.*;
-
+import java.util.ArrayList;
+import java.util.List;
 @Entity
 @Table(name = "categorias")
 public class Categoria {
