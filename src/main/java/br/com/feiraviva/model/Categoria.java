@@ -23,6 +23,35 @@ public class Categoria {
         this.descricao = descricao;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoria_pai_id")
+    private Categoria categoriaPai;
+
+    @OneToMany(mappedBy = "categoriaPai")
+    private List<Categoria> subcategorias = new ArrayList<>();
+
+    // Composite uniforme: a mesma classe é folha e composta
+    public boolean ehFolha() {
+        return subcategorias == null || subcategorias.isEmpty();
+    }
+
+    public Categoria getCategoriaPai() {
+        return categoriaPai;
+    }
+
+    public void setCategoriaPai(Categoria categoriaPai) {
+        this.categoriaPai = categoriaPai;
+    }
+
+    public List<Categoria> getSubcategorias() {
+        return subcategorias;
+    }
+
+    public void setSubcategorias(List<Categoria> subcategorias) {
+        this.subcategorias = subcategorias;
+    }
+    // + getters/setters de categoriaPai e subcategorias
+
     // getters e setters (gerar pelo IDE (Alt + Insert))
 
     public Long getId() {
