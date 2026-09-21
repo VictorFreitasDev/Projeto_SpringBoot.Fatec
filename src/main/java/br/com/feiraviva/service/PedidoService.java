@@ -3,6 +3,7 @@ package br.com.feiraviva.service;
 import br.com.feiraviva.dto.*;
 import br.com.feiraviva.exception.RegraDeNegocioException;
 import br.com.feiraviva.exception.ResourceNotFoundException;
+import br.com.feiraviva.factory.PedidoFactory;
 import br.com.feiraviva.model.*;
 import br.com.feiraviva.repository.*;
 import org.springframework.stereotype.Service;
@@ -17,16 +18,16 @@ public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final CarrinhoRepository carrinhoRepository;
     private final EnderecoRepository enderecoRepository;
-    private final CarrinhoService carrinhoService;
+    private final PedidoFactory pedidoFactory;
 
     public PedidoService(PedidoRepository pedidoRepository,
                          CarrinhoRepository carrinhoRepository,
                          EnderecoRepository enderecoRepository,
-                         CarrinhoService carrinhoService) {
+                         PedidoFactory pedidoFactory) {
         this.pedidoRepository = pedidoRepository;
         this.carrinhoRepository = carrinhoRepository;
         this.enderecoRepository = enderecoRepository;
-        this.carrinhoService = carrinhoService;
+        this.pedidoFactory = pedidoFactory;
     }
 
     @Transactional
@@ -40,37 +41,22 @@ public class PedidoService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Endereço não encontrado: " + dto.enderecoId()));
 
-        var pedido = new Pedido();
-        pedido.setCliente(carrinho.getCliente());
-        pedido.setEndereco(endereco);
-        pedido.setStatus(PedidoStatus.CRIADO);
-
-        BigDecimal subtotal = BigDecimal.ZERO;
         for (var item : carrinho.getItens()) {
             var produto = item.getProduto();
-
             // R1 de novo, agora no momento crítico
             if (produto.getEstoque() < item.getQuantidade()) {
                 throw new RegraDeNegocioException("Estoque insuficiente para " + produto.getNome());
             }
             produto.setEstoque(produto.getEstoque() - item.getQuantidade());  // baixa
-
-            // SNAPSHOT: congela o preço do momento da compra
-            var itemPedido = new ItemPedido(pedido, produto,
-                    item.getQuantidade(), item.getPrecoUnitario());
-            pedido.getItens().add(itemPedido);
-            subtotal = subtotal.add(itemPedido.getSubtotal());
         }
 
-        var frete = carrinhoService.calcularFrete(subtotal);
-        pedido.setSubtotal(subtotal);
-        pedido.setFrete(frete);
-        pedido.setTotal(subtotal.add(frete));
+        var pedido = pedidoFactory.montar(carrinho, endereco);
 
         pedidoRepository.save(pedido);
         pedido.setNumero(String.format("FV-%04d", pedido.getId()));  // dirty checking persiste
 
         carrinho.getItens().clear();   // carrinho zerado após a compra
+        carrinho.setCodigoCupom(null);   // cupom não sobrevive à compra
         return paraResponse(pedido);
     }
 

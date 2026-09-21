@@ -25,7 +25,19 @@ public class Carrinho {
     protected Carrinho() { }
     public Carrinho(Cliente cliente) { this.cliente = cliente; }
 
+    @Column(name = "codigo_cupom", length = 20)
+    private String codigoCupom;      // + getter/setter
+
     // getters e setters (gerar pelo IDE)
+
+
+    public String getCodigoCupom() {
+        return codigoCupom;
+    }
+
+    public void setCodigoCupom(String codigoCupom) {
+        this.codigoCupom = codigoCupom;
+    }
 
     public Long getId() {
         return id;
