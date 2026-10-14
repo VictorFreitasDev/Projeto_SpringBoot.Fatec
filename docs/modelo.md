@@ -3,7 +3,7 @@
 > Documento vivo do modelo de domínio do projeto.
 > **Stack:** Java 21 LTS • Spring Boot 4.1.1 • Maven • React
 > **Pacote base:** `br.com.feiraviva`
-> **Versão-base:** Aula 11 • **Início do código:** Aula 06 • **Manutenção:** equipes + professor.
+> **Versão-base:** 1.0 (Aula 13 — Migrações com Flyway) • **Início do código:** Aula 06 • **Manutenção:** equipes + professor.
 
 ## 1. Identificação
 
