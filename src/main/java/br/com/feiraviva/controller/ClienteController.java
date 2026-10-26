@@ -1,6 +1,8 @@
 package br.com.feiraviva.controller;
 
 import br.com.feiraviva.dto.*;
+import br.com.feiraviva.exception.RegraDeNegocioException;
+import br.com.feiraviva.security.ClienteAutenticado;
 import br.com.feiraviva.service.ClienteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -8,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -39,7 +42,11 @@ public class ClienteController {
     @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
     public ClienteResponseDTO buscar(
             @Parameter(description = "ID do cliente", required = true, example = "1")
-            @PathVariable Long id) {
+            @PathVariable Long id,
+            @AuthenticationPrincipal ClienteAutenticado cliente) {
+        if (!cliente.id().equals(id)) {
+            throw new RegraDeNegocioException("Você só pode consultar o próprio perfil");
+        }
         return clienteService.buscar(id);
     }
 

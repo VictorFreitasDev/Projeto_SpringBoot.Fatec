@@ -1,6 +1,7 @@
 package br.com.feiraviva.controller;
 
 import br.com.feiraviva.dto.*;
+import br.com.feiraviva.security.ClienteAutenticado;
 import br.com.feiraviva.service.CarrinhoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,10 +28,8 @@ public class CarrinhoController {
             description = "Retorna itens, cupom, estratégia de frete e totais calculados.")
     @ApiResponse(responseCode = "200", description = "Carrinho retornado (pode estar vazio)")
     @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
-    public CarrinhoResponseDTO obter(
-            @Parameter(description = "ID do cliente", required = true, example = "1")
-            @RequestParam Long clienteId) {
-        return carrinhoService.obter(clienteId);
+    public CarrinhoResponseDTO obter(@AuthenticationPrincipal ClienteAutenticado cliente) {
+        return carrinhoService.obter(cliente.id());
     }
 
     @PostMapping("/itens")
@@ -41,10 +41,9 @@ public class CarrinhoController {
     @ApiResponse(responseCode = "404", description = "Cliente ou produto não encontrado")
     @ApiResponse(responseCode = "409", description = "Produto sem estoque suficiente")
     public CarrinhoResponseDTO adicionar(
-            @Parameter(description = "ID do cliente", required = true, example = "1")
-            @RequestParam Long clienteId,
+            @AuthenticationPrincipal ClienteAutenticado cliente,
             @Valid @RequestBody ItemCarrinhoDTO dto) {
-        return carrinhoService.adicionarItem(clienteId, dto);
+        return carrinhoService.adicionarItem(cliente.id(), dto);
     }
 
     @PutMapping("/itens/{itemId}")
@@ -54,13 +53,12 @@ public class CarrinhoController {
     @ApiResponse(responseCode = "404", description = "Cliente ou item não encontrado")
     @ApiResponse(responseCode = "409", description = "Produto sem estoque suficiente")
     public CarrinhoResponseDTO alterar(
-            @Parameter(description = "ID do cliente", required = true, example = "1")
-            @RequestParam Long clienteId,
+            @AuthenticationPrincipal ClienteAutenticado cliente,
             @Parameter(description = "ID do item no carrinho", required = true, example = "10")
             @PathVariable Long itemId,
             @Parameter(description = "Nova quantidade do produto", required = true, example = "3")
             @RequestParam int quantidade) {
-        return carrinhoService.alterarQuantidade(clienteId, itemId, quantidade);
+        return carrinhoService.alterarQuantidade(cliente.id(), itemId, quantidade);
     }
 
     @DeleteMapping("/itens/{itemId}")
@@ -69,11 +67,10 @@ public class CarrinhoController {
     @ApiResponse(responseCode = "200", description = "Item removido com sucesso")
     @ApiResponse(responseCode = "404", description = "Cliente ou item não encontrado")
     public CarrinhoResponseDTO remover(
-            @Parameter(description = "ID do cliente", required = true, example = "1")
-            @RequestParam Long clienteId,
+            @AuthenticationPrincipal ClienteAutenticado cliente,
             @Parameter(description = "ID do item no carrinho", required = true, example = "10")
             @PathVariable Long itemId) {
-        return carrinhoService.removerItem(clienteId, itemId);
+        return carrinhoService.removerItem(cliente.id(), itemId);
     }
 
     @PostMapping("/cupom")
@@ -83,11 +80,10 @@ public class CarrinhoController {
     @ApiResponse(responseCode = "400", description = "Cupom inválido ou expirado")
     @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
     public CarrinhoResponseDTO aplicarCupom(
-            @Parameter(description = "ID do cliente", required = true, example = "1")
-            @RequestParam Long clienteId,
+            @AuthenticationPrincipal ClienteAutenticado cliente,
             @Parameter(description = "Código do cupom", required = true, example = "DESC10")
             @RequestParam String codigo) {
-        return carrinhoService.aplicarCupom(clienteId, codigo);
+        return carrinhoService.aplicarCupom(cliente.id(), codigo);
     }
 
     @DeleteMapping("/cupom")
@@ -96,9 +92,8 @@ public class CarrinhoController {
     @ApiResponse(responseCode = "200", description = "Cupom removido")
     @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
     public CarrinhoResponseDTO removerCupom(
-            @Parameter(description = "ID do cliente", required = true, example = "1")
-            @RequestParam Long clienteId) {
-        return carrinhoService.removerCupom(clienteId);
+            @AuthenticationPrincipal ClienteAutenticado cliente) {
+        return carrinhoService.removerCupom(cliente.id());
     }
 
     @PostMapping("/frete")
@@ -108,10 +103,9 @@ public class CarrinhoController {
     @ApiResponse(responseCode = "400", description = "Tipo de frete inválido")
     @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
     public CarrinhoResponseDTO definirFrete(
-            @Parameter(description = "ID do cliente", required = true, example = "1")
-            @RequestParam Long clienteId,
+            @AuthenticationPrincipal ClienteAutenticado cliente,
             @Parameter(description = "Tipo de frete (ex: PAC, SEDEX)", required = true, example = "SEDEX")
             @RequestParam String tipo) {
-        return carrinhoService.definirEstrategiaFrete(clienteId, tipo);
+        return carrinhoService.definirEstrategiaFrete(cliente.id(), tipo);
     }
 }

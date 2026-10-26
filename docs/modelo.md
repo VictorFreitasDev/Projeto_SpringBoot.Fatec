@@ -3,7 +3,7 @@
 > Documento vivo do modelo de domínio do projeto.
 > **Stack:** Java 21 LTS • Spring Boot 4.1.1 • Maven • React
 > **Pacote base:** `br.com.feiraviva`
-> **Versão-base:** 1.1 (Aula 14 — Spring Security e Autenticação) • **Início do código:** Aula 06 • **Manutenção:** equipes + professor.
+> **Versão-base:** 1.2 (Aula 15 — JWT: Autenticação Real) • **Início do código:** Aula 06 • **Manutenção:** equipes + professor.
 
 ## 1. Identificação
 

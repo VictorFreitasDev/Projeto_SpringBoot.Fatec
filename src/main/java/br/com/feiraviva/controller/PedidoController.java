@@ -1,6 +1,7 @@
 package br.com.feiraviva.controller;
 
 import br.com.feiraviva.dto.*;
+import br.com.feiraviva.security.ClienteAutenticado;
 import br.com.feiraviva.service.PedidoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,10 +33,9 @@ public class PedidoController {
     @ApiResponse(responseCode = "400", description = "Carrinho vazio ou dados inválidos")
     @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
     public PedidoResponseDTO finalizar(
-            @Parameter(description = "ID do cliente", required = true, example = "1")
-            @RequestParam Long clienteId,
+            @AuthenticationPrincipal ClienteAutenticado cliente,
             @Valid @RequestBody PedidoRequestDTO dto) {
-        return pedidoService.finalizar(clienteId, dto);
+        return pedidoService.finalizar(cliente.id(), dto);
     }
 
     @GetMapping
@@ -42,10 +43,9 @@ public class PedidoController {
             description = "Retorna a lista completa de pedidos realizados por um cliente.")
     @ApiResponse(responseCode = "200", description = "Lista de pedidos retornada")
     @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
-    public List historico(
-            @Parameter(description = "ID do cliente", required = true, example = "1")
-            @RequestParam Long clienteId) {
-        return pedidoService.historico(clienteId);
+    public List<PedidoResponseDTO> historico(
+            @AuthenticationPrincipal ClienteAutenticado cliente) {
+        return pedidoService.historico(cliente.id());
     }
 
     @GetMapping("/{id}")
@@ -54,11 +54,10 @@ public class PedidoController {
     @ApiResponse(responseCode = "200", description = "Pedido retornado com sucesso")
     @ApiResponse(responseCode = "404", description = "Cliente ou Pedido não encontrado")
     public PedidoResponseDTO buscar(
-            @Parameter(description = "ID do cliente", required = true, example = "1")
-            @RequestParam Long clienteId,
+            @AuthenticationPrincipal ClienteAutenticado cliente,
             @Parameter(description = "ID do pedido", required = true, example = "100")
             @PathVariable Long id) {
-        return pedidoService.buscar(clienteId, id);
+        return pedidoService.buscar(cliente.id(), id);
     }
 
     @PostMapping("/{id}/cancelamento")
@@ -68,10 +67,9 @@ public class PedidoController {
     @ApiResponse(responseCode = "400", description = "Não é possível cancelar no status atual")
     @ApiResponse(responseCode = "404", description = "Cliente ou Pedido não encontrado")
     public PedidoResponseDTO cancelar(
-            @Parameter(description = "ID do cliente", required = true, example = "1")
-            @RequestParam Long clienteId,
+            @AuthenticationPrincipal ClienteAutenticado cliente,
             @Parameter(description = "ID do pedido", required = true, example = "100")
             @PathVariable Long id) {
-        return pedidoService.cancelar(clienteId, id);
+        return pedidoService.cancelar(cliente.id(), id);
     }
 }
