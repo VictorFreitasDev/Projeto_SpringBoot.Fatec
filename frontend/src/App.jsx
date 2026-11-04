@@ -1,18 +1,34 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar';
-import ProdutoGrid from './components/ProdutoGrid';
+import PrivateRoute from './components/PrivateRoute';
+import Home from './pages/Home';
+import LoginPage from './pages/LoginPage';
+import CartPage from './pages/CartPage';
+import OrdersPage from './pages/OrdersPage';
 
 function App() {
     return (
-        <div>
-            <Navbar />
-            <main style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-                <h1>Produtos da feira</h1>
-                <p style={{ color: '#a1a1aa' }}>
-                    Direto do produtor local para a sua mesa.
-                </p>
-                <ProdutoGrid />
-            </main>
-        </div>
+        <BrowserRouter>
+            <AuthProvider>
+                <CartProvider>
+                    <Navbar />
+                    <main style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+                        <Routes>
+                            <Route path="/" element={<Home />} />
+                            <Route path="/login" element={<LoginPage />} />
+                            <Route path="/carrinho" element={<CartPage />} />
+                            <Route path="/pedidos" element={
+                                <PrivateRoute>
+                                    <OrdersPage />
+                                </PrivateRoute>
+                            } />
+                        </Routes>
+                    </main>
+                </CartProvider>
+            </AuthProvider>
+        </BrowserRouter>
     );
 }
 
